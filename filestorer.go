@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"flag"
+	"fmt"
 	"io"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // via http://stackoverflow.com/a/22892986/329700
@@ -28,6 +30,10 @@ type response struct {
 }
 
 func metricsHandler(w http.ResponseWriter, r *http.Request, directory string) {
+	if strings.ToUpper(r.Method) != "POST" {
+		http.Error(w, fmt.Sprintf("%s method not supported. Upload data via POST", r.Method), 405)
+		return
+	}
 	randFile := randSeq(10)
 	f, err := os.Create(filepath.Join(directory, randFile))
 	if err != nil {
